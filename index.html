@@ -3,11 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Deployment Successful | Server Test</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Test</h1>
-    <p>CREATE101</p>
-    <p>Train303</p>
+    <!-- Background elements -->
+    <div class="gradient-bg"></div>
+    <div class="glow-circle-1"></div>
+    <div class="glow-circle-2"></div>
+
+    <!-- Main Dashboard Card -->
+    <main class="dashboard-card">
+        <div class="header">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                Deployment Online
+            </div>
+            <h1>System Status Dashboard</h1>
+            <p>Your web container is up, configured, and serving traffic successfully.</p>
+        </div>
+
+        <!-- Info Grid -->
+        <section class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Environment</div>
+                <div id="env-val" class="info-value">Production (Docker)</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Server Engine</div>
+                <div id="engine-val" class="info-value mono">nginx/alpine</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Local System Time</div>
+                <div id="time-val" class="info-value mono">--:--:--</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Browser Client</div>
+                <div id="client-val" class="info-value">Detecting...</div>
+            </div>
+        </section>
+
+        <!-- Interactive section -->
+        <section class="interactive-section">
+            <h2 class="section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-blue)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                Diagnostics & logs
+            </h2>
+            <div class="test-container">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <button id="ping-btn" class="btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        Test Server Ping
+                    </button>
+                    <button id="diag-btn" class="btn btn-secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        Run Diagnostics
+                    </button>
+                </div>
+
+                <!-- Terminal Logger Console -->
+                <div id="terminal-console" class="terminal">
+                    <div class="terminal-line">
+                        <span class="terminal-time">[00:00:00]</span>
+                        <span class="terminal-success">SYSTEM: Container successfully initialized.</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="terminal-time">[00:00:00]</span>
+                        <span class="terminal-info">SYSTEM: Listening on port 80 (routed via Compose).</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Deployment toolchain powered by <a href="https://www.docker.com/" target="_blank" rel="noopener noreferrer">Docker Compose</a> &copy; 2026</p>
+    </footer>
+
+    <!-- Interactive JS Script -->
+    <script>
+        // Update Time
+        function updateTime() {
+            const timeEl = document.getElementById('time-val');
+            const now = new Date();
+            timeEl.textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Get Browser Client Info
+        function detectBrowser() {
+            const clientEl = document.getElementById('client-val');
+            const ua = navigator.userAgent;
+            let browser = "Unknown Browser";
+            
+            if (ua.indexOf("Firefox") > -1) {
+                browser = "Mozilla Firefox";
+            } else if (ua.indexOf("Chrome") > -1) {
+                browser = "Google Chrome";
+            } else if (ua.indexOf("Safari") > -1) {
+                browser = "Apple Safari";
+            } else if (ua.indexOf("Edge") > -1) {
+                browser = "Microsoft Edge";
+            }
+            
+            // Get OS snippet
+            let os = "Unknown OS";
+            if (ua.indexOf("Win") > -1) os = "Windows";
+            else if (ua.indexOf("Mac") > -1) os = "macOS";
+            else if (ua.indexOf("Linux") > -1) os = "Linux";
+            else if (ua.indexOf("Android") > -1) os = "Android";
+            else if (ua.indexOf("like Mac") > -1) os = "iOS";
+
+            clientEl.textContent = `${browser} (${os})`;
+        }
+        detectBrowser();
+
+        // Terminal Logging Utilities
+        const consoleEl = document.getElementById('terminal-console');
+        const startTime = Date.now();
+
+        function getTimestamp() {
+            const diffMs = Date.now() - startTime;
+            const secs = Math.floor(diffMs / 1000) % 60;
+            const mins = Math.floor(diffMs / 60000) % 60;
+            const hrs = Math.floor(diffMs / 3600000) % 24;
+            
+            const format = (num) => String(num).padStart(2, '0');
+            return `[${format(hrs)}:${format(mins)}:${format(secs)}]`;
+        }
+
+        function logToConsole(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'terminal-time';
+            timeSpan.textContent = getTimestamp();
+            
+            const contentSpan = document.createElement('span');
+            contentSpan.className = `terminal-${type}`;
+            contentSpan.textContent = message;
+            
+            line.appendChild(timeSpan);
+            line.appendChild(contentSpan);
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        // Ping Button Event
+        const pingBtn = document.getElementById('ping-btn');
+        pingBtn.addEventListener('click', () => {
+            pingBtn.disabled = true;
+            logToConsole('CLIENT: Initiating server latency test...', 'info');
+            
+            setTimeout(() => {
+                const simulatedLatency = Math.floor(Math.random() * 35) + 5; // 5ms to 40ms
+                logToConsole(`SERVER: Pong! Response received in ${simulatedLatency}ms. Status: 200 OK`, 'success');
+                pingBtn.disabled = false;
+            }, 400 + Math.random() * 300);
+        });
+
+        // Run Diagnostics Button Event
+        const diagBtn = document.getElementById('diag-btn');
+        diagBtn.addEventListener('click', () => {
+            diagBtn.disabled = true;
+            logToConsole('DIAGNOSTICS: Starting full health check...', 'warning');
+            
+            const checks = [
+                { msg: 'Checking CPU load levels...', type: 'info', delay: 400 },
+                { msg: 'CPU utilization at 4.2% - Optimal', type: 'success', delay: 700 },
+                { msg: 'Scanning system memory (RAM)...', type: 'info', delay: 1100 },
+                { msg: 'RAM allocation: 284MB / 1024MB - Healthy', type: 'success', delay: 1400 },
+                { msg: 'Validating network loopback interfaces...', type: 'info', delay: 1900 },
+                { msg: 'Network interfaces bound successfully on port 80.', type: 'success', delay: 2200 },
+                { msg: 'Verifying permissions and file integrity...', type: 'info', delay: 2600 },
+                { msg: 'File system checks clean. Nginx operational.', type: 'success', delay: 2900 },
+                { msg: 'Diagnostics Complete. All systems nominal.', type: 'success', delay: 3300 }
+            ];
+
+            checks.forEach((check) => {
+                setTimeout(() => {
+                    logToConsole(check.msg, check.type);
+                    if (check.msg.includes('Diagnostics Complete')) {
+                        diagBtn.disabled = false;
+                    }
+                }, check.delay);
+            });
+        });
+    </script>
 </body>
 </html>
